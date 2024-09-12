@@ -1,0 +1,48 @@
+#! /usr/bin/env bash
+
+chcp.com 65001
+
+ADDRS=$(netsh interface ip show config | findstr -R "\".*\" 인터페이스에 대한.* IP 주소.*\d*\.\d*\.\d*\.\d*|Configuration for interface.* IP Address.*\d*\.\d*\.\d*\.\d*")
+
+COUNT=0
+
+netsh interface ip show config | findstr -R "\".*\" 인터페이스에 대한.* IP 주소.*\d*\.\d*\.\d*\.\d*|Configuration for interface.* IP Address.*\d*\.\d*\.\d*\.\d*" | while read line; do
+  # echo $COUNT
+  if [ $COUNT == 2 ]; then
+    break
+  fi
+
+  # echo $line
+  # 인터페이스 이름 추출
+  if [[ "$line" =~ Configuration\ for\ interface ]]; then
+    INTERFACE_NAME=$(echo "$line" | sed 's/Configuration for interface //;s/"//g')
+  fi
+
+  # IP 주소 추출
+  if [[ "$line" =~ "IP Address" ]]; then
+    IP_ADDRESS=$(echo "$line" | sed 's/IP Address\s*: //' | tr -d '[:blank:]')
+
+    # 인터페이스 이름과 IP 주소 출력
+    echo "Interface Name: $INTERFACE_NAME"
+    echo "IP Address: $IP_ADDRESS"
+    echo
+  fi
+
+  # # 인터페이스 이름 추출
+  # if [[ "$line" =~ 인터페이스에\ 대한\ 구성 ]]; then
+  #   INTERFACE_NAME=$(echo "$line" | sed 's/"//g' | sed 's/ 인터페이스에 대한 구성//')
+  # fi
+
+  # # IP 주소 추출
+  # if [[ "$line" =~ "IP\ 주소" ]]; then
+  #   IP_ADDRESS=$(echo "$line" | sed 's/ IP 주소: *//g')
+
+  #   # 인터페이스 이름과 IP 주소 출력
+  #   echo "Interface Name: $INTERFACE_NAME"
+  #   echo "IP Address: $IP_ADDRESS"
+  #   echo
+  # fi
+  COUNT=$(($COUNT + 1))
+done
+
+netsh interface ip set address "$INTERFACE_NAME" static 192.168.0.10 255.255.255.0 192.168.0.1
