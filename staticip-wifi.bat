@@ -49,6 +49,9 @@ for %%i in (%octet1% %octet2% %octet3% %octet4%) do (
     )
 )
 
+@REM @REM IP 주소가 올바르다면 성공 메시지
+@REM echo 올바른 IP 주소입니다.
+
 :: 변수 초기화
 set "INTERFACE_NAME="
 set "IP_ADDRESS="
@@ -71,7 +74,7 @@ for /f "tokens=*" %%i in (%RESULT_FILE%) do (
     set "line=%%i"
     
     :: 인터페이스 이름 추출 (영어 및 한글 모두 처리)
-    if "!line!" neq "!line:Configuration for interface=!" (
+    if "!line!" neq "!line:Configuration for interface "Wi-Fi"=!" (
         set "INTERFACE_NAME=!line:Configuration for interface =!"
         set "INTERFACE_NAME=!INTERFACE_NAME:~1,-1!"
         for /f "tokens=* delims= " %%a in ("!INTERFACE_NAME!") do set "INTERFACE_NAME=%%a"
@@ -84,7 +87,7 @@ for /f "tokens=*" %%i in (%RESULT_FILE%) do (
         echo IP Address: !IP_ADDRESS!
         echo
         set /a COUNT+=1
-        if !COUNT! geq 1 (
+        if !COUNT! geq 3 (
             goto :end
         )
     )

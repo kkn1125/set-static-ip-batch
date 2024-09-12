@@ -19,12 +19,12 @@ COUNT=0
 # 인터페이스 구성 정보 조회
 netsh interface ip show config | findstr -R "\".*\" 인터페이스에 대한.* IP 주소.*\d*\.\d*\.\d*\.\d*|Configuration for interface.* IP Address.*\d*\.\d*\.\d*\.\d*" | while read line; do
   # 구성 정보 상단만 보고 종료
-  if [ $COUNT == 2 ]; then
+  if [ $COUNT == 4 ]; then
     break
   fi
 
   # 인터페이스 이름 추출
-  if [[ "$line" =~ Configuration\ for\ interface ]]; then
+  if [[ "$line" =~ "Configuration for interface \"Wi-Fi\"" ]]; then
     INTERFACE_NAME=$(echo "$line" | sed 's/Configuration for interface //;s/"//g')
   fi
 
